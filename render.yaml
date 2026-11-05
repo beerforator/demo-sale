@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: demo
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /sushione
+        destination: /sushione/index.html
+      - type: rewrite
+        source: /sushione/*
+        destination: /sushione/index.html
+      - type: rewrite
+        source: /sushiwto
+        destination: /sushiwto/index.html
+      - type: rewrite
+        source: /sushiwto/*
+        destination: /sushiwto/index.html
+      - type: rewrite
+        source: /sushitree
+        destination: /sushitree/index.html
+      - type: rewrite
+        source: /sushitree/*
+        destination: /sushitree/index.html

@@ -1,0 +1,26 @@
+.hits-section { scroll-margin-top: 130px; }
+.hit-rail {
+  display: flex;
+  gap: .7rem;
+  overflow-x: auto;
+  padding: 0 1rem .4rem;
+}
+.hit-card {
+  flex: 0 0 auto;
+  width: 138px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: .75rem;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+.hit-card__emoji { font-size: 1.8rem; line-height: 1; margin-bottom: .4rem; }
+.hit-card__name { font-size: .8rem; font-weight: 700; line-height: 1.25; }
+.hit-card__price {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--coral-ink);
+  margin-top: .35rem;
+}

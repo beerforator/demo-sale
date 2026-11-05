@@ -1,0 +1,115 @@
+[
+  {
+    "id": "rolls",
+    "name": "Роллы",
+    "icon": "utensils",
+    "slug": "rolls",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "classic", "name": "Классические" },
+      { "id": "baked", "name": "Запечённые" },
+      { "id": "tempura", "name": "Темпура" },
+      { "id": "spicy", "name": "Острые" }
+    ],
+    "filters": ["all", "new", "hit", "spicy", "veg"]
+  },
+  {
+    "id": "sets",
+    "name": "Сеты",
+    "icon": "packages",
+    "slug": "sets",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "small", "name": "Маленькие" },
+      { "id": "medium", "name": "Средние" },
+      { "id": "big", "name": "Большие" }
+    ],
+    "filters": ["all", "new", "hit"]
+  },
+  {
+    "id": "sushi",
+    "name": "Суши",
+    "icon": "sandwich",
+    "slug": "sushi",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "nigiri", "name": "Нигири" },
+      { "id": "gunkan", "name": "Гунканы" }
+    ],
+    "filters": ["all", "new", "hit", "spicy"]
+  },
+  {
+    "id": "gunkan",
+    "name": "Гунканы",
+    "icon": "ship",
+    "slug": "gunkan",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "caviar", "name": "С икрой" },
+      { "id": "spicy", "name": "Острые" }
+    ],
+    "filters": ["all", "new", "hit", "spicy"]
+  },
+  {
+    "id": "wok",
+    "name": "WOK",
+    "icon": "pan",
+    "slug": "wok",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "noodles", "name": "Лапша" },
+      { "id": "rice", "name": "Рис" }
+    ],
+    "filters": ["all", "new", "hit", "spicy", "veg"]
+  },
+  {
+    "id": "soups",
+    "name": "Супы",
+    "icon": "soup",
+    "slug": "soups",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "miso", "name": "Мисо" },
+      { "id": "ramen", "name": "Рамен" }
+    ],
+    "filters": ["all", "new", "hit", "spicy"]
+  },
+  {
+    "id": "drinks",
+    "name": "Напитки",
+    "icon": "cup",
+    "slug": "drinks",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "hot", "name": "Горячие" },
+      { "id": "cold", "name": "Холодные" },
+      { "id": "lemonade", "name": "Лимонады" }
+    ],
+    "filters": ["all", "new", "hit"]
+  },
+  {
+    "id": "sauces",
+    "name": "Соусы и допы",
+    "icon": "vial",
+    "slug": "sauces",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "combo", "name": "Пары и сеты" },
+      { "id": "classic", "name": "Соусы" },
+      { "id": "spicy", "name": "Приправы" }
+    ],
+    "filters": ["all", "new", "hit", "spicy"]
+  },
+  {
+    "id": "desserts",
+    "name": "Десерты",
+    "icon": "cake",
+    "slug": "desserts",
+    "subcategories": [
+      { "id": "all", "name": "Все" },
+      { "id": "mochi", "name": "Моти" },
+      { "id": "cakes", "name": "Пирожные" }
+    ],
+    "filters": ["all", "new", "hit", "veg"]
+  }
+]

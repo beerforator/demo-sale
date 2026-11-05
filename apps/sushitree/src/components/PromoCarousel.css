@@ -1,0 +1,33 @@
+.promo-rail {
+  display: flex;
+  gap: .7rem;
+  overflow-x: auto;
+  padding: 1rem 1rem 0;
+  scroll-snap-type: x mandatory;
+}
+.promo-card {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: min(78vw, 260px);
+  height: 118px;
+  border-radius: 22px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  box-shadow: var(--shadow);
+}
+.promo-card small {
+  display: block;
+  font-weight: 600;
+  font-size: .72rem;
+  opacity: .85;
+  margin-top: .25rem;
+}
+.promo-card--coral { background: linear-gradient(135deg, var(--coral), #8E2B17); }
+.promo-card--wasabi { background: linear-gradient(135deg, var(--wasabi), #4C6318); }
+.promo-card--sea { background: linear-gradient(135deg, var(--sea), #1F4A6B); }

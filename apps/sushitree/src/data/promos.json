@@ -1,0 +1,20 @@
+[
+  {
+    "id": "promo-1",
+    "title": "-20% на первый заказ",
+    "subtitle": "Промокод SUSHI10",
+    "variant": "coral"
+  },
+  {
+    "id": "promo-2",
+    "title": "2 ролла Калифорния в подарок",
+    "subtitle": "При заказе от 1500 ₽",
+    "variant": "wasabi"
+  },
+  {
+    "id": "promo-3",
+    "title": "Бесплатная доставка",
+    "subtitle": "При заказе от 1000 ₽",
+    "variant": "sea"
+  }
+]

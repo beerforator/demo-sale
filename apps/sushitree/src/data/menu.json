@@ -1,0 +1,161 @@
+{
+  "brand": {
+    "name": "СушиСтоРолл",
+    "city": "Новороссийск",
+    "etaMinutes": "40–60 мин",
+    "rating": 4.8
+  },
+  "categories": [
+    { "id": "hits", "name": "Хиты" },
+    { "id": "rolls", "name": "Роллы" },
+    { "id": "sets", "name": "Сеты" },
+    { "id": "soups", "name": "Супы" },
+    { "id": "drinks", "name": "Напитки" },
+    { "id": "sauces", "name": "Соусы" }
+  ],
+  "products": [
+    {
+      "id": "philadelphia",
+      "categoryId": "rolls",
+      "name": "Филадельфия классик",
+      "weight": "250 г · лосось, сыр",
+      "price": 429,
+      "emoji": "🍣",
+      "badge": null,
+      "isHit": true,
+      "inStock": true
+    },
+    {
+      "id": "california",
+      "categoryId": "rolls",
+      "name": "Калифорния с крабом",
+      "weight": "240 г · краб, авокадо",
+      "price": 389,
+      "emoji": "🥑",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "dragon",
+      "categoryId": "rolls",
+      "name": "Ролл «Дракон»",
+      "weight": "260 г · угорь, унаги-соус",
+      "price": 469,
+      "emoji": "🐉",
+      "badge": "острый",
+      "isHit": true,
+      "inStock": true
+    },
+    {
+      "id": "unagi-maki",
+      "categoryId": "rolls",
+      "name": "Унаги маки",
+      "weight": "220 г · угорь",
+      "price": 399,
+      "emoji": "🍥",
+      "badge": null,
+      "isHit": false,
+      "inStock": false
+    },
+    {
+      "id": "set-tokyo",
+      "categoryId": "sets",
+      "name": "Сет «Токио»",
+      "weight": "32 шт · 1380 г",
+      "price": 1690,
+      "emoji": "🍱",
+      "badge": "хит",
+      "isHit": true,
+      "inStock": true
+    },
+    {
+      "id": "set-osaka",
+      "categoryId": "sets",
+      "name": "Сет «Осака»",
+      "weight": "24 шт · 990 г",
+      "price": 1290,
+      "emoji": "🍙",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "miso",
+      "categoryId": "soups",
+      "name": "Мисо-суп",
+      "weight": "300 мл",
+      "price": 219,
+      "emoji": "🍲",
+      "badge": null,
+      "isHit": true,
+      "inStock": true
+    },
+    {
+      "id": "tom-yum",
+      "categoryId": "soups",
+      "name": "Том Ям с креветками",
+      "weight": "350 мл",
+      "price": 349,
+      "emoji": "🥘",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "ivan-tea",
+      "categoryId": "drinks",
+      "name": "Иван-чай",
+      "weight": "0.5 л",
+      "price": 149,
+      "emoji": "🍵",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "cola",
+      "categoryId": "drinks",
+      "name": "Кола",
+      "weight": "0.5 л",
+      "price": 129,
+      "emoji": "🥤",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "ginger",
+      "categoryId": "sauces",
+      "name": "Имбирь",
+      "weight": "20 г",
+      "price": 49,
+      "emoji": "🫚",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "soy-sauce",
+      "categoryId": "sauces",
+      "name": "Соевый соус",
+      "weight": "25 г",
+      "price": 39,
+      "emoji": "🥢",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    },
+    {
+      "id": "spicy-sauce",
+      "categoryId": "sauces",
+      "name": "Спайси соус",
+      "weight": "30 г",
+      "price": 49,
+      "emoji": "🌶️",
+      "badge": null,
+      "isHit": false,
+      "inStock": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "city": "Новороссийск",
+  "phone": "+7 (8617) 123-45-67",
+  "address": "ул. Советов, 42",
+  "hours": "10:00 – 23:00",
+  "deliveryTime": "45–60 мин",
+  "minOrder": 500,
+  "freeDeliveryFrom": 900,
+  "deliveryFee": 199,
+  "socialLinks": {
+    "telegram": "https://t.me/sushistoroll",
+    "whatsapp": "https://wa.me/786171234567",
+    "vk": "https://vk.com/sushistoroll"
+  }
+}

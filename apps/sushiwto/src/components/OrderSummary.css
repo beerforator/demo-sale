@@ -1,0 +1,23 @@
+.summary {
+  margin: 0 1rem 1rem;
+  background: var(--surface-2);
+  border-radius: 18px;
+  padding: .9rem 1rem;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .84rem;
+  color: var(--ink-soft);
+  padding: .28rem 0;
+}
+.summary-row--disc { color: var(--wasabi); }
+.summary-row--total {
+  border-top: 1px solid var(--line);
+  margin-top: .4rem;
+  padding-top: .6rem;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink);
+}
+.summary-row .v { font-family: var(--font-mono); }

@@ -1,0 +1,27 @@
+.cross-rail {
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  padding: .2rem 1rem 1rem;
+}
+.cross-card {
+  flex: 0 0 auto;
+  width: 108px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: .6rem;
+  text-align: center;
+}
+.cross-card__emoji { font-size: 1.4rem; }
+.cross-card__name { font-size: .7rem; font-weight: 700; margin-top: .3rem; line-height: 1.2; min-height: 2.1em; }
+.cross-card__price { font-family: var(--font-mono); font-size: .74rem; color: var(--coral-ink); font-weight: 800; margin: .25rem 0 .4rem; }
+.cross-card button {
+  width: 100%;
+  border: none;
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: .32rem;
+  font-weight: 800;
+  font-size: .78rem;
+}

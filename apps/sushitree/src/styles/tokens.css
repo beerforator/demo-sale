@@ -1,0 +1,66 @@
+:root {
+  --ink: #1B1712;
+  --ink-soft: #5B5346;
+  --rice: #FBF1E4;
+  --surface: #FFFDF9;
+  --surface-2: #F3E6D2;
+  --line: #E7D9C1;
+  --coral: #FF5A3C;
+  --coral-ink: #C23F26;
+  --wasabi: #7FA030;
+  --wasabi-bright: #9CC53B;
+  --gold: #E2A33D;
+  --sea: #3E7CB1;
+  --stop-bg: #E4DCCB;
+  --stop-text: #A79C86;
+  --st-new: #8A8578;
+  --st-prep: #E2A33D;
+  --st-transit: #3E7CB1;
+  --st-done: #3F8F4F;
+  --shadow: 0 1px 2px rgba(27, 23, 18, .06), 0 8px 24px -8px rgba(27, 23, 18, .18);
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #F3E9D8; --ink-soft: #BBAE99;
+    --rice: #14100B; --surface: #1F1810; --surface-2: #2A2116;
+    --line: #3A2F21;
+    --coral: #FF6B4A; --coral-ink: #FF8A6B;
+    --wasabi: #A9CF4C; --wasabi-bright: #B4D94A;
+    --gold: #F0B24E; --sea: #5B9BD1;
+    --stop-bg: #241D14; --stop-text: #786C58;
+    --st-new: #9A917E; --st-prep: #F0B24E; --st-transit: #5B9BD1; --st-done: #4FAE62;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -10px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ink: #F3E9D8; --ink-soft: #BBAE99;
+  --rice: #14100B; --surface: #1F1810; --surface-2: #2A2116;
+  --line: #3A2F21;
+  --coral: #FF6B4A; --coral-ink: #FF8A6B;
+  --wasabi: #A9CF4C; --wasabi-bright: #B4D94A;
+  --gold: #F0B24E; --sea: #5B9BD1;
+  --stop-bg: #241D14; --stop-text: #786C58;
+  --st-new: #9A917E; --st-prep: #F0B24E; --st-transit: #5B9BD1; --st-done: #4FAE62;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -10px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --ink: #1B1712; --ink-soft: #5B5346;
+  --rice: #FBF1E4; --surface: #FFFDF9; --surface-2: #F3E6D2;
+  --line: #E7D9C1;
+  --coral: #FF5A3C; --coral-ink: #C23F26;
+  --wasabi: #7FA030; --wasabi-bright: #9CC53B;
+  --gold: #E2A33D; --sea: #3E7CB1;
+  --stop-bg: #E4DCCB; --stop-text: #A79C86;
+  --st-new: #8A8578; --st-prep: #E2A33D; --st-transit: #3E7CB1; --st-done: #3F8F4F;
+  --shadow: 0 1px 2px rgba(27, 23, 18, .06), 0 8px 24px -8px rgba(27, 23, 18, .18);
+  color-scheme: light;
+}

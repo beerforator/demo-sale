@@ -1,0 +1,21 @@
+{
+  "id": "1042",
+  "address": "пр. Ленина, 14, кв. 56",
+  "addressNote": "Домофон 56К",
+  "distanceKm": 3.2,
+  "etaMinutes": 9,
+  "items": [
+    { "name": "Филадельфия классик", "qty": 2 },
+    { "name": "Сет «Токио»", "qty": 1 },
+    { "name": "Соевый соус", "qty": 2 }
+  ],
+  "customer": {
+    "name": "Игорь П.",
+    "initials": "ИП",
+    "phoneMasked": "+7 900 ••• 12 34"
+  },
+  "payment": {
+    "method": "cash",
+    "changeFrom": 5000
+  }
+}

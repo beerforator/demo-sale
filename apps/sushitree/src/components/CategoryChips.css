@@ -1,0 +1,37 @@
+.chip-row {
+  position: sticky;
+  top: 71px;
+  z-index: 15;
+  background: var(--rice);
+  padding: .9rem 1rem .6rem;
+}
+.chip-track {
+  position: relative;
+  display: flex;
+  gap: .4rem;
+  overflow-x: auto;
+}
+.chip {
+  position: relative;
+  z-index: 2;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-weight: 700;
+  font-size: .82rem;
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: color .25s;
+}
+.chip[aria-selected="true"] { color: var(--rice); border-color: transparent; }
+.chip-indicator {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  transition: transform .3s cubic-bezier(.65, 0, .35, 1), width .3s cubic-bezier(.65, 0, .35, 1), opacity .2s;
+}

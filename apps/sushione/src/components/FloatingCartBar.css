@@ -1,0 +1,31 @@
+.float-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  margin: 0 .8rem .8rem;
+  padding: .9rem 1.1rem;
+  border-radius: 18px;
+  background: var(--ink);
+  color: var(--rice);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, .5);
+  transform: translateY(140%);
+  transition: transform .4s cubic-bezier(.2, .9, .3, 1);
+}
+.float-bar--show { transform: translateY(0); }
+.float-bar__info { font-size: .8rem; font-weight: 700; }
+.float-bar__info b { font-family: var(--font-mono); display: block; font-size: .98rem; }
+.float-bar__cta {
+  border: none;
+  background: var(--coral);
+  color: #fff;
+  font-weight: 800;
+  font-size: .82rem;
+  padding: .65rem 1.05rem;
+  border-radius: 12px;
+  text-decoration: none;
+}
