@@ -13,6 +13,7 @@
     "preview": "node scripts/preview.mjs",
     "dev:one": "npm run dev --workspace=@demo-sale/sushione",
     "dev:two": "npm run dev --workspace=@demo-sale/sushiwto",
-    "dev:three": "npm run dev --workspace=@demo-sale/sushitree"
+    "dev:three": "npm run dev --workspace=@demo-sale/sushitree",
+    "test": "node --test packages/customer/*.test.mjs"
   }
 }

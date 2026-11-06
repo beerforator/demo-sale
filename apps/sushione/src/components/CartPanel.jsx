@@ -1,11 +1,11 @@
+import { quoteOrder, useCustomer, PromoMessage } from '../../../../packages/customer/index.jsx'
+import store from '../data/store.json'
 import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { X, Plus, Minus, Trash2, Package, CheckCircle } from './Icons'
 import products from '../data/products.json'
 
-const DELIVERY_FEE = 200
-const FREE_DELIVERY_THRESHOLD = 900
 
 const styles = {
   overlay: {
@@ -392,13 +392,9 @@ export default function CartPanel() {
   const [promoInput, setPromoInput] = useState('')
   const [imageErrors, setImageErrors] = useState({})
 
-  const subtotal = items.reduce((sum, item) => {
-    const product = productById[item.productId]
-    return sum + (product ? product.price * item.quantity : 0)
-  }, 0)
-
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
-  const total = subtotal + deliveryFee
+  const { state: customer } = useCustomer()
+  const quote = quoteOrder({ items, products, promoCode, store, balance: customer.balance, hasOrders: customer.orders.length > 0 })
+  const { subtotal, deliveryFee, total } = quote
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
 
   const handleClose = useCallback(() => {
@@ -414,7 +410,7 @@ export default function CartPanel() {
   }, [handleClose])
 
   const handleApplyPromo = useCallback(() => {
-    const code = promoInput.trim()
+    const code = promoInput.trim().toUpperCase()
     if (code) {
       applyPromo(code)
       setPromoInput('')
@@ -598,6 +594,7 @@ export default function CartPanel() {
                 )}
               </div>
 
+              <PromoMessage quote={quote} />
               <div style={styles.totalRow}>
                 <span style={styles.totalLabel}>Итого</span>
                 <span style={styles.totalValue}>{formatPrice(total)}</span>

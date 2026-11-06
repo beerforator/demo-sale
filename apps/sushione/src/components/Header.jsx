@@ -1,3 +1,5 @@
+import { useCustomer } from '../../../../packages/customer/index.jsx'
+import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
@@ -13,6 +15,9 @@ const NAV = [
 export default function Header({ onMenuToggle }) {
   const { itemCount, openPanel } = useCart()
   const [authOpen, setAuthOpen] = useState(false)
+  const { state: customer } = useCustomer()
+  const navigate = useNavigate()
+  const openAccount = () => customer.signedIn ? navigate('/account') : setAuthOpen(true)
   const [scrolled, setScrolled] = useState(false)
   const { pathname } = useLocation()
 
@@ -68,12 +73,12 @@ export default function Header({ onMenuToggle }) {
             {itemCount > 0 && <span className="lux-cart-badge">{itemCount}</span>}
           </button>
 
-          <button className="lux-icon-btn lux-icon-btn--user" aria-label="Профиль">
+          <button className="lux-icon-btn lux-icon-btn--user" aria-label="Профиль" onClick={openAccount}>
             <User size={18} />
           </button>
 
-          <button className="lux-signin" onClick={() => setAuthOpen(true)}>
-            Войти
+          <button className="lux-signin" onClick={openAccount}>
+            {customer.signedIn ? `${customer.balance} бонусов` : 'Войти'}
           </button>
         </div>
       </header>

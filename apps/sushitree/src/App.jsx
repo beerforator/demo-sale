@@ -8,6 +8,7 @@ import AboutPage from './pages/AboutPage.jsx'
 import CartPage from './pages/CartPage.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import CourierPage from './pages/CourierPage.jsx'
+import AccountPage from './pages/AccountPage.jsx'
 
 function AppLayout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
@@ -20,6 +21,7 @@ function AppLayout() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/account" element={<AccountPage />} />
       </Routes>
       <Footer />
       <CartPanel />
