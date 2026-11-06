@@ -1,11 +1,11 @@
+import { quoteOrder, useCustomer, PromoMessage } from '../../../../packages/customer/index.jsx'
+import store from '../data/store.json'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { Plus, Minus, Trash2, Package, CheckCircle } from '../components/Icons'
 import products from '../data/products.json'
 
-const DELIVERY_FEE = 199
-const FREE_DELIVERY_THRESHOLD = 900
 
 const productById = {}
 products.forEach(p => { productById[p.id] = p })
@@ -31,13 +31,9 @@ export default function CartPage() {
 
   const cartProductIds = new Set(items.map(i => i.productId))
 
-  const subtotal = items.reduce((sum, item) => {
-    const product = productById[item.productId]
-    return sum + (product ? product.price * item.quantity : 0)
-  }, 0)
-
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
-  const total = subtotal + deliveryFee
+  const { state: customer } = useCustomer()
+  const quote = quoteOrder({ items, products, promoCode, store, balance: customer.balance, hasOrders: customer.orders.length > 0 })
+  const { subtotal, deliveryFee, total } = quote
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
 
   const recommended = products
@@ -45,7 +41,7 @@ export default function CartPage() {
     .slice(0, 6)
 
   const handleApplyPromo = () => {
-    const code = promoInput.trim()
+    const code = promoInput.trim().toUpperCase()
     if (code) {
       applyPromo(code)
       setPromoInput('')
@@ -74,6 +70,7 @@ export default function CartPage() {
           Корзина
         </h1>
 
+        <PromoMessage quote={quote} />
         {items.length === 0 ? (
           <div style={{
             display: 'flex',
@@ -384,7 +381,7 @@ export default function CartPage() {
                       fontWeight: 600,
                       color: 'var(--color-green)',
                     }}>
-                      Промокод применён: {promoCode}
+                      Промокод: {promoCode}
                     </span>
                   </div>
                   <button

@@ -1,3 +1,4 @@
+import { CustomerProvider } from '../../../packages/customer/index.jsx'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -9,9 +10,11 @@ import './styles/luxe.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-      <CartProvider>
-        <App />
-      </CartProvider>
+      <CustomerProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </CustomerProvider>
     </BrowserRouter>
   </React.StrictMode>
 )

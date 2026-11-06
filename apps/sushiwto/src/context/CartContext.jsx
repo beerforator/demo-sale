@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useCallback } from 'react'
+import { createContext, useContext, useReducer, useCallback, useEffect } from 'react'
 
 const CartContext = createContext()
 
@@ -11,7 +11,7 @@ function cartReducer(state, action) {
           ...state,
           items: state.items.map(i =>
             i.productId === action.product.id
-              ? { ...i, quantity: i.quantity + 1 }
+              ? { ...i, quantity: Math.min(99, i.quantity + 1) }
               : i
           )
         }
@@ -50,7 +50,7 @@ function cartReducer(state, action) {
         ...state,
         items: state.items.map(i =>
           i.productId === action.productId
-            ? { ...i, quantity: Math.max(1, action.quantity) }
+            ? { ...i, quantity: Math.min(99, Math.max(1, Math.floor(action.quantity) || 1)) }
             : i
         )
       }
@@ -69,12 +69,21 @@ function cartReducer(state, action) {
   }
 }
 
+const CART_KEY = `demo-sale.cart.${import.meta.env.BASE_URL}`
+function initialCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_KEY))
+    if (saved && Array.isArray(saved.items) && saved.items.every(i => typeof i.productId === 'string' && Number.isInteger(i.quantity) && i.quantity > 0 && i.quantity <= 99)) {
+      return { items: saved.items, promoCode: typeof saved.promoCode === 'string' ? saved.promoCode : null, panelOpen: false }
+    }
+  } catch {}
+  return { items: [], promoCode: null, panelOpen: false }
+}
 export function CartProvider({ children }) {
-  const [state, dispatch] = useReducer(cartReducer, {
-    items: [],
-    promoCode: null,
-    panelOpen: false
-  })
+  const [state, dispatch] = useReducer(cartReducer, undefined, initialCart)
+  useEffect(() => {
+    try { localStorage.setItem(CART_KEY, JSON.stringify({ items: state.items, promoCode: state.promoCode })) } catch {}
+  }, [state.items, state.promoCode])
 
   const addItem = useCallback((product) => dispatch({ type: 'ADD_ITEM', product }), [])
   const removeItem = useCallback((productId) => dispatch({ type: 'REMOVE_ITEM', productId }), [])

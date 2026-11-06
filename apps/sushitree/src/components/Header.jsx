@@ -1,3 +1,5 @@
+import { useCustomer } from '../../../../packages/customer/index.jsx'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useCart } from '../context/CartContext.jsx'
 import { ShoppingCart, User, Search, MapPin, ChevronDown, Menu } from './Icons'
@@ -123,6 +125,9 @@ const styles = {
 export default function Header({ onMenuToggle }) {
   const { itemCount, openPanel } = useCart()
   const [authOpen, setAuthOpen] = useState(false)
+  const { state: customer } = useCustomer()
+  const navigate = useNavigate()
+  const openAccount = () => customer.signedIn ? navigate('/account') : setAuthOpen(true)
 
   return (
     <>
@@ -189,7 +194,7 @@ export default function Header({ onMenuToggle }) {
           <button
             className="header-icon-btn"
             style={styles.iconBtn}
-            aria-label="Профиль"
+            aria-label="Профиль" onClick={openAccount}
           >
             <User size={20} />
           </button>
@@ -197,9 +202,9 @@ export default function Header({ onMenuToggle }) {
           <button
             className="header-signin"
             style={styles.signIn}
-            onClick={() => setAuthOpen(true)}
+            onClick={openAccount}
           >
-            Войти
+            {customer.signedIn ? `${customer.balance} бонусов` : 'Войти'}
           </button>
         </div>
       </header>
