@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom'
+import { FooterDemoNotice } from '../../../../packages/customer/index.jsx'
+import { Link } from 'react-router-dom'
 import { MapPin, Phone, Clock } from './Icons'
 
 const footerCss = `
@@ -21,31 +22,18 @@ const footerCss = `
   z-index: 1;
 }
 
-.footer-brand-name {
-  font-family: var(--font-display) !important;
-  font-weight: 400 !important;
-  font-size: 30px !important;
-  letter-spacing: 0.01em !important;
-}
-
-.footer-heading {
-  font-size: 10px !important;
-  font-weight: 500 !important;
-  letter-spacing: var(--track-wider) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: var(--spacing-2xl);
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr) minmax(0, 1.25fr) minmax(0, .85fr);
+  gap: clamp(20px, 3.5vw, 56px);
   max-width: var(--content-max-width);
   margin: 0 auto;
 }
 
 .footer-brand-name {
-  font-size: var(--font-size-xl);
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
   color: var(--color-text);
   letter-spacing: -0.01em;
   margin-bottom: var(--spacing-sm);
@@ -65,11 +53,11 @@ const footerCss = `
 }
 
 .footer-heading {
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-  color: var(--color-text);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--track-wider);
   margin-bottom: var(--spacing-md);
 }
 
@@ -89,21 +77,9 @@ const footerCss = `
   color: var(--color-accent);
 }
 
-.footer-contact-row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-sm);
-  line-height: 1.5;
-}
+.footer-contacts { font-style: normal; }
 
-.footer-contact-row svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--color-text-muted);
-}
+.footer-contact-row a:hover { color: var(--color-accent); }
 
 .footer-social-links {
   display: flex;
@@ -129,6 +105,10 @@ const footerCss = `
   color: #fff;
 }
 
+@media (min-width: 1025px) {
+  .footer { z-index: 111; }
+}
+
 @media (max-width: 900px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -147,15 +127,10 @@ const footerCss = `
 `
 
 export default function Footer() {
-  const location = useLocation()
-  const isRoot = location.pathname === '/'
-
   return (
     <>
       <style>{footerCss}</style>
-      <footer className="footer" 
-    //   style={isRoot ? { marginLeft: 'var(--sidebar-width)' } : undefined}
-      >
+      <footer className="footer">
         <div className="footer-grid">
           <div>
             <div className="footer-brand-name">СушиСтоРолл</div>
@@ -170,24 +145,26 @@ export default function Footer() {
               <Link to="/about" className="footer-link">О нас</Link>
               <Link to="/cart" className="footer-link">Корзина</Link>
               <Link to="/courier" className="footer-link">Курьеру</Link>
-              <a href="#" className="footer-link">Доставка и оплата</a>
+              <Link to="/checkout" className="footer-link">Оформление заказа</Link>
             </nav>
           </div>
 
           <div>
             <h4 className="footer-heading">Контакты</h4>
-            <div className="footer-contact-row">
-              <MapPin />
-              <span>ул. Советов, 42, Новороссийск</span>
-            </div>
-            <div className="footer-contact-row">
-              <Phone />
-              <span>+7 (8617) 123-45-67</span>
-            </div>
-            <div className="footer-contact-row">
-              <Clock />
-              <span>10:00 – 23:00</span>
-            </div>
+            <address className="footer-contacts">
+              <div className="footer-contact-row">
+                <MapPin aria-hidden="true" />
+                <span>ул. Советов, 42, Новороссийск</span>
+              </div>
+              <div className="footer-contact-row">
+                <Phone aria-hidden="true" />
+                <a href="tel:+786171234567">+7 (8617) 123-45-67</a>
+              </div>
+              <div className="footer-contact-row">
+                <Clock aria-hidden="true" />
+                <span><time dateTime="10:00">10:00</time> – <time dateTime="23:00">23:00</time></span>
+              </div>
+            </address>
           </div>
 
           <div>
@@ -223,6 +200,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
+        <FooterDemoNotice />
       </footer>
     </>
   )

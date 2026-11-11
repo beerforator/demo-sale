@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom'
+import { FooterDemoNotice } from '../../../../packages/customer/index.jsx'
+import { Link } from 'react-router-dom'
 import { MapPin, Phone, Clock } from './Icons'
 
 const footerCss = `
@@ -76,22 +77,6 @@ const footerCss = `
   color: var(--color-blue-soft);
 }
 
-.footer-contact-row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-sm);
-  line-height: 1.5;
-}
-
-.footer-contact-row svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--color-text-muted);
-}
-
 .footer-social-links {
   display: flex;
   gap: var(--spacing-sm);
@@ -134,16 +119,10 @@ const footerCss = `
 `
 
 export default function Footer() {
-  const location = useLocation()
-  const isRoot = location.pathname === '/'
-
   return (
     <>
       <style>{footerCss}</style>
-      <footer 
-        className="footer" 
-        // style={isRoot ? { marginLeft: 'var(--sidebar-width)' } : undefined}
-      >
+      <footer className="footer">
         <div className="footer-grid">
           <div>
             <div className="footer-brand-name">СушиСтоРолл</div>
@@ -174,7 +153,7 @@ export default function Footer() {
             </div>
             <div className="footer-contact-row">
               <Clock />
-              <span>10:00 – 23:00</span>
+              <span><time dateTime="10:00">10:00</time> – <time dateTime="23:00">23:00</time></span>
             </div>
           </div>
 
@@ -211,6 +190,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
+        <FooterDemoNotice />
       </footer>
     </>
   )

@@ -8,8 +8,10 @@ import categories from '../data/categories.json'
 import products from '../data/products.json'
 
 function getHeaderOffset() {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--header-height')
-  return parseFloat(raw) || 64
+  const styles = getComputedStyle(document.documentElement)
+  const header = parseFloat(styles.getPropertyValue('--header-height')) || 64
+  const mobileCategories = parseFloat(styles.getPropertyValue('--mobile-category-height')) || 0
+  return header + mobileCategories
 }
 
 function getFilteredItems(categoryId, filter, subcategory) {
@@ -66,7 +68,7 @@ function CategoryBody({ category, filter }) {
         id={`subcat-${category.id}-${sub.id}`}
         style={{
           marginBottom: 'var(--spacing-xl)',
-          scrollMarginTop: 'calc(var(--header-height) + 120px)',
+          scrollMarginTop: 'calc(var(--category-offset) + 120px)',
         }}
       >
         <h3 style={{
@@ -134,22 +136,10 @@ function CategorySection({ category }) {
       ref={sectionRef}
       style={{
         marginBottom: 'var(--spacing-2xl)',
-        scrollMarginTop: 'var(--header-height)',
+        scrollMarginTop: 'var(--category-offset)',
       }}
     >
-      <div ref={miniHeaderRef} style={{
-        position: 'sticky',
-        top: 'var(--header-height)',
-        zIndex: 80,
-        background: 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        padding: 'var(--spacing-md) var(--spacing-xl)',
-        // borderBottom: '1px solid var(--color-border)',
-        marginBottom: 'var(--spacing-lg)',
-        marginLeft: '-15px',
-        marginRight: '-15px',
-      }}>
+      <div ref={miniHeaderRef} className="category-sticky">
         <CategoryMiniHeader
           category={category}
           activeFilter={filter}

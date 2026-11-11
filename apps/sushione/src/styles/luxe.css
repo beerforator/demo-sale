@@ -85,6 +85,11 @@
 /* ─────────────────────────────────────────────
    ШАПКА
    ───────────────────────────────────────────── */
+:root {
+  --navigation-glass: rgba(252, 251, 249, 0.86);
+  --navigation-blur: blur(14px) saturate(1.4);
+}
+
 .lux-header {
   position: fixed;
   top: 0;
@@ -103,9 +108,15 @@
               backdrop-filter var(--transition-base);
 }
 
+.lux-header--scrolled,
+.lux-header--scrolled ~ .app-layout :is(.rail--open, .flyout, .cat-drawer),
+.app-layout:has(.cat-sticky--stuck) .rail {
+  background: var(--navigation-glass);
+  -webkit-backdrop-filter: var(--navigation-blur);
+  backdrop-filter: var(--navigation-blur);
+}
+
 .lux-header--scrolled {
-  background: rgba(252, 251, 249, 0.86);
-  backdrop-filter: blur(14px) saturate(1.4);
   border-bottom-color: var(--hairline);
 }
 
@@ -264,8 +275,7 @@
 
 @media (max-width: 780px) {
   .lux-city,
-  .lux-signin,
-  .lux-icon-btn--user { display: none; }
+  .lux-signin { display: none; }
   .lux-logo { font-size: 20px; }
   .lux-header { padding: 0 12px; gap: 8px; }
   .lux-icon-btn { width: 34px; height: 34px; }
@@ -293,7 +303,6 @@
   align-items: center;
   justify-content: space-between;
   padding: 26px 0 22px;
-  /* background: var(--paper); */
   border-right: 1px solid var(--hairline);
   transition: background var(--transition-base);
 }
@@ -977,22 +986,29 @@
    ПРИЛИПАЮЩАЯ МИНИ-ШАПКА КАТЕГОРИИ
    Механика липкости — в HomePage; здесь только вид.
    ───────────────────────────────────────────── */
+.app-layout > .main-content { container-type: inline-size; }
+
 .cat-sticky {
   position: sticky;
   top: var(--header-height);
   z-index: 80;
-  background: rgba(252, 251, 249, 0.9);
-  backdrop-filter: blur(14px) saturate(1.4);
-  /* border-bottom: 1px solid var(--hairline); */
   margin-bottom: var(--spacing-2xl);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
   margin-left: calc(-1 * 15px);
   margin-right: calc(-1 * 15px);
   padding: 0 15px;
 }
 
-.cat-sticky--stuck {
-  border-bottom-color: var(--hairline);
+.cat-sticky--stuck::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: 100cqw;
+  transform: translateX(-50%);
+  background: var(--navigation-glass);
+  -webkit-backdrop-filter: var(--navigation-blur);
+  backdrop-filter: var(--navigation-blur);
   box-shadow: 0 10px 24px -22px rgba(18, 22, 26, 0.5);
 }
 

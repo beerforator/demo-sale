@@ -153,6 +153,7 @@ const css = `
   left: 0;
   right: 0;
   z-index: 89;
+  height: var(--mobile-category-height);
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -169,6 +170,8 @@ const css = `
 
 .sidebar-mobile-nav {
   display: flex;
+  height: 100%;
+  align-items: center;
   flex-direction: row;
   overflow-x: auto;
   padding: 12px;

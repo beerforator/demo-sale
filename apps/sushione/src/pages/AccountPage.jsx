@@ -2,6 +2,7 @@ import { AccountPage as SharedAccount } from '../../../../packages/customer/inde
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import products from '../data/products.json'
+import store from '../data/store.json'
 
 export default function AccountPage() {
   const cart = useCart()
@@ -15,7 +16,7 @@ export default function AccountPage() {
         cart.setQuantity(product.id, line.quantity)
       }
     }
-    navigate('/cart')
+    navigate('/account?tab=cart')
   }
-  return <SharedAccount onRepeat={repeat} />
+  return <SharedAccount cart={cart} products={products} store={store} onRepeat={repeat} />
 }

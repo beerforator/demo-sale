@@ -6,20 +6,38 @@ services:
     staticPublishPath: ./dist
     routes:
       - type: rewrite
+        source: /one
+        destination: /one/index.html
+      - type: rewrite
+        source: /one/*
+        destination: /one/index.html
+      - type: rewrite
+        source: /two
+        destination: /two/index.html
+      - type: rewrite
+        source: /two/*
+        destination: /two/index.html
+      - type: rewrite
+        source: /three
+        destination: /three/index.html
+      - type: rewrite
+        source: /three/*
+        destination: /three/index.html
+      - type: redirect
         source: /sushione
-        destination: /sushione/index.html
-      - type: rewrite
+        destination: /one
+      - type: redirect
         source: /sushione/*
-        destination: /sushione/index.html
-      - type: rewrite
+        destination: /one/*
+      - type: redirect
         source: /sushiwto
-        destination: /sushiwto/index.html
-      - type: rewrite
+        destination: /two
+      - type: redirect
         source: /sushiwto/*
-        destination: /sushiwto/index.html
-      - type: rewrite
+        destination: /two/*
+      - type: redirect
         source: /sushitree
-        destination: /sushitree/index.html
-      - type: rewrite
+        destination: /three
+      - type: redirect
         source: /sushitree/*
-        destination: /sushitree/index.html
+        destination: /three/*

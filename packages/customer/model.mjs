@@ -1,23 +1,28 @@
+import { moscowDay } from './moscow-day.mjs'
+
 export const STORAGE_KEY = 'demo-sale.customer.v1'
-export const INITIAL_BONUS = 300
+export const INITIAL_BONUS = 1000
 export const money = value => `${value.toLocaleString('ru-RU')} ₽`
-export const freshState = () => ({
-  version: 1, signedIn: false,
+export const freshState = (day = moscowDay()) => ({
+  version: 1, day, signedIn: false,
   profile: { name: 'Алексей', phone: '+7 (000) 000-00-00', email: 'demo@example.com', address: 'Новороссийск, ул. Примерная, 12, кв. 8' },
   balance: INITIAL_BONUS, orders: [],
   ledger: [{ id: 'welcome', label: 'Приветственные бонусы', amount: INITIAL_BONUS, time: null }],
 })
-export function readState(storage) {
+export function readState(storage, day = moscowDay()) {
   const raw = storage.getItem(STORAGE_KEY)
-  if (!raw) return freshState()
+  if (!raw) return freshState(day)
   try {
     const state = JSON.parse(raw)
     if (state.version !== 1 || typeof state.signedIn !== 'boolean' || !Number.isInteger(state.balance) || state.balance < 0 ||
       !state.profile || !['name', 'phone', 'email', 'address'].every(key => typeof state.profile[key] === 'string') ||
       !Array.isArray(state.orders) || !state.orders.every(o => typeof o.id === 'string' && Array.isArray(o.lines) && Number.isFinite(o.total)) ||
-      !Array.isArray(state.ledger) || !state.ledger.every(x => typeof x.label === 'string' && Number.isFinite(x.amount))) return freshState()
+      !Array.isArray(state.ledger) || !state.ledger.every(x => typeof x.label === 'string' && Number.isFinite(x.amount))) return freshState(day)
+    if (state.day !== day) {
+      return { ...freshState(day), signedIn: state.signedIn, profile: state.profile }
+    }
     return state
-  } catch { return freshState() }
+  } catch { return freshState(day) }
 }
 export function quoteOrder({ items, products, promoCode, balance = 0, useBonuses = false, hasOrders = false, deliveryType = 'delivery', store }) {
   const lines = items.map(item => {
@@ -42,15 +47,16 @@ export function reduceCustomer(state, action) {
     case 'SIGN_IN': return { ...state, signedIn: true }
     case 'SIGN_OUT': return { ...state, signedIn: false }
     case 'PROFILE': return { ...state, profile: { ...state.profile, ...action.profile } }
-    case 'RESET': return freshState()
+    case 'RESET': return freshState(state.day)
     case 'PAY': {
-      if (!state.signedIn) throw new Error('Войдите в демоаккаунт перед оплатой.')
+      if (action.day !== state.day) throw new Error('Начался новый день. Соберите корзину заново.')
+      if (!state.signedIn) throw new Error('Войдите в аккаунт перед оплатой.')
       if (state.orders.some(o => o.id === action.id)) return state
       const quote = quoteOrder({ ...action.input, balance: state.balance, hasOrders: state.orders.length > 0 })
       if (!quote.lines.length || quote.subtotal < action.input.store.minOrder) throw new Error(`Минимальная сумма товаров — ${money(action.input.store.minOrder)}.`)
       if (['total', 'spent', 'earned', 'discount'].some(key => quote[key] !== action.expected[key])) throw new Error('Баланс или скидка изменились в другой вкладке. Вернитесь к оформлению и проверьте сумму.')
       const order = { ...quote, id: action.id, number: `Д-${action.id.slice(0, 8).toUpperCase()}`, time: action.time,
-        variant: action.variant, status: 'Оплачен · демо', deliveryType: action.input.deliveryType,
+        variant: action.variant, status: 'Оплачен', deliveryType: action.input.deliveryType,
         customer: action.customer }
       const entries = []
       if (quote.spent) entries.push({ id: `${action.id}-spend`, amount: -quote.spent, label: `Списание за заказ ${order.number}`, time: action.time })
