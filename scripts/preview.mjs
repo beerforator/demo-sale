@@ -1,15 +1,24 @@
 import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { resolve, extname, sep } from 'node:path'
+import { variants } from './variants.mjs'
 
 // Preview the same per-application SPA fallbacks configured in render.yaml.
 const root = resolve('dist')
-const variants = new Set(['sushione', 'sushiwto', 'sushitree'])
+const routes = new Set(variants.map(({ path }) => path))
+const previousRoutes = new Map(variants.map(({ workspace, path }) => [workspace, path]))
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json' }
 createServer(async (req, res) => {
   try {
-    const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname)
+    const url = new URL(req.url, 'http://localhost')
+    const pathname = decodeURIComponent(url.pathname)
     const segments = pathname.split('/').filter(Boolean)
+    const previousPath = previousRoutes.get(segments[0])
+    if (previousPath) {
+      const location = url.pathname.replace(/^\/[^/]+/, `/${previousPath}`) + url.search
+      res.writeHead(301, { Location: location }).end()
+      return
+    }
     let file = resolve(root, '.' + pathname)
     if (file !== root && !file.startsWith(root + sep)) {
       res.writeHead(403).end(); return
@@ -18,7 +27,7 @@ createServer(async (req, res) => {
       if ((await stat(file)).isDirectory()) file = resolve(file, 'index.html')
       await stat(file)
     } catch {
-      if (!variants.has(segments[0])) { res.writeHead(404).end('Not found'); return }
+      if (!routes.has(segments[0])) { res.writeHead(404).end('Not found'); return }
       file = resolve(root, segments[0], 'index.html')
     }
     const data = await readFile(file)

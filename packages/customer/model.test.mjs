@@ -1,6 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { freshState, quoteOrder, reduceCustomer, readState, STORAGE_KEY } from './model.mjs'
+import { INITIAL_BONUS, freshState, quoteOrder, reduceCustomer, readState, STORAGE_KEY } from './model.mjs'
+
+import { millisecondsUntilMoscowMidnight, moscowDay, readDailyCart } from './moscow-day.mjs'
 
 const products = [{ id: 'roll', name: 'Ролл', price: 420 }, { id: 'stopped', price: 100, stopList: true }]
 const store = { deliveryFee: 199, freeDeliveryFrom: 900, minOrder: 500 }
@@ -8,7 +10,7 @@ const input = { products, store, items: [{ productId: 'roll', quantity: 2 }], pr
 const signedIn = () => ({ ...freshState(), signedIn: true })
 function payment(state, overrides = {}) {
   const orderInput = { ...input, ...overrides }
-  return { type: 'PAY', id: 'test-order-12345', time: '2026-11-05T12:00:00.000Z', variant: 'sushione', customer: state.profile, input: orderInput,
+  return { type: 'PAY', day: state.day, id: 'test-order-12345', time: '2026-11-05T12:00:00.000Z', variant: 'sushione', customer: state.profile, input: orderInput,
     expected: quoteOrder({ ...orderInput, balance: state.balance, hasOrders: state.orders.length > 0 }) }
 }
 
@@ -19,9 +21,9 @@ test('скидка, бонусы и доставка: 840 − 84 − 226 + 199 =
 })
 test('успешная оплата сохраняет заказ и обе операции бонусного счёта', () => {
   const state = signedIn(); const next = reduceCustomer(state, payment(state))
-  assert.equal(next.balance, 100)
+  assert.equal(next.balance, 800)
   assert.equal(next.orders.length, 1)
-  assert.deepEqual(next.ledger.map(x => x.amount), [-226, 26, 300])
+  assert.deepEqual(next.ledger.map(x => x.amount), [-226, 26, 1000])
   assert.equal(next.orders[0].total, 729)
   assert.equal(state.orders.length, 0)
 })
@@ -77,4 +79,42 @@ test('аккаунт восстанавливается из общего хра
   assert.deepEqual(reduceCustomer(paid, { type: 'RESET' }), freshState())
   assert.deepEqual(readState({ getItem: () => '{bad' }), freshState())
   assert.deepEqual(readState({ getItem: () => JSON.stringify({ version: 1, balance: -1 }) }), freshState())
+})
+
+
+test('московские сутки меняются в 21:00 UTC независимо от часового пояса устройства', () => {
+  const before = new Date('2026-11-11T20:59:59.875Z')
+  const midnight = new Date('2026-11-11T21:00:00.000Z')
+  assert.equal(moscowDay(before), '2026-11-11')
+  assert.equal(moscowDay(midnight), '2026-11-12')
+  assert.equal(millisecondsUntilMoscowMidnight(before), 125)
+  assert.equal(millisecondsUntilMoscowMidnight(midnight), 86_400_000)
+})
+
+test('после полуночи или пропуска нескольких дней сбрасываются заказы и бонусы, профиль и вход сохраняются', () => {
+  const state = { ...signedIn(), day: '2026-11-11' }
+  const paid = reduceCustomer(state, payment(state))
+  const storage = { getItem: () => JSON.stringify(paid) }
+  assert.deepEqual(readState(storage, state.day), paid)
+  for (const day of ['2026-11-12', '2026-11-16']) {
+    const reset = readState(storage, day)
+    assert.equal(reset.balance, INITIAL_BONUS)
+    assert.deepEqual(reset.orders, [])
+    assert.deepEqual(reset.ledger.map(entry => entry.amount), [1000])
+    assert.equal(reset.signedIn, true)
+    assert.deepEqual(reset.profile, paid.profile)
+    assert.throws(() => reduceCustomer(reset, payment(state)), /новый день/)
+  }
+})
+
+test('корзины всех трёх вариантов сохраняются в пределах суток и сбрасываются вместе с промокодом', () => {
+  const day = '2026-11-11'
+  const data = new Map(['sushione', 'sushiwto', 'sushitree'].map(variant => [variant,
+    JSON.stringify({ day, items: input.items, promoCode: 'SUSHI10' }),
+  ]))
+  const storage = { getItem: key => data.get(key) }
+  for (const key of data.keys()) {
+    assert.deepEqual(readDailyCart(storage, key, day), { items: input.items, promoCode: 'SUSHI10' })
+    assert.deepEqual(readDailyCart(storage, key, '2026-11-12'), { items: [], promoCode: null })
+  }
 })
