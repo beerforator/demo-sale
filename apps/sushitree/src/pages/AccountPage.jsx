@@ -1,7 +1,7 @@
 import { AccountPage as SharedAccount } from '../../../../packages/customer/index.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
-import products from '../data/products.json'
+import products from '../data/products.js'
 import store from '../data/store.json'
 
 export default function AccountPage() {

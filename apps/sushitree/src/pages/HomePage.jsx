@@ -1,237 +1,288 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import Sidebar from '../components/Sidebar.jsx'
-import BannerCarousel from '../components/BannerCarousel.jsx'
-import CategoryMiniHeader from '../components/CategoryMiniHeader.jsx'
-import ProductCard from '../components/ProductCard.jsx'
+import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, Plus } from '../components/Icons.jsx'
+import { useCart } from '../context/CartContext.jsx'
 import { useReveal } from '../hooks/useReveal.js'
+import coverPhoto from '../assets/food/cover.webp'
+import chefPhoto from '../assets/food/chef.webp'
 import categories from '../data/categories.json'
-import products from '../data/products.json'
+import products from '../data/products.js'
 
-function getHeaderOffset() {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--header-height')
-  return parseFloat(raw) || 64
+const menu = new Map(products.map(product => [product.id, product]))
+const chefPicks = ['philadelphia', 'eel-roll', 'spicy-tuna'].map(id => menu.get(id))
+const sets = [
+  { id: 'set-duo', occasion: 'На двоих' },
+  { id: 'set-company', occasion: 'Для компании' },
+  { id: 'set-family', occasion: 'На всю семью' },
+  { id: 'set-party', occasion: 'Для вечеринки' },
+]
+const newFlavors = ['alaska-hot', 'baked-shrimp'].map(id => menu.get(id))
+const filterLabels = { new: 'Новинки', hit: 'Хиты', spicy: 'Острые', veg: 'Вегетарианские' }
+const priceFormatter = new Intl.NumberFormat('ru-RU')
+
+function Price({ value }) {
+  return <span className="editorial-price">{priceFormatter.format(value)} ₽</span>
 }
 
-function getFilteredItems(categoryId, filter, subcategory) {
-  let items = products.filter(p => p.categoryId === categoryId)
-  if (subcategory && subcategory !== 'all') {
-    items = items.filter(p => p.subcategoryId === subcategory)
-  }
-  if (filter === 'new') items = items.filter(p => p.tags.includes('new'))
-  if (filter === 'hit') items = items.filter(p => p.tags.includes('hit'))
-  if (filter === 'spicy') items = items.filter(p => p.tags.includes('spicy'))
-  if (filter === 'veg') items = items.filter(p => p.tags.includes('veg'))
-  return items
-}
+function AddProduct({ product }) {
+  const { addItem, items } = useCart()
+  const quantity = items.find(item => item.productId === product.id)?.quantity ?? 0
 
-function ProductGrid({ items }) {
-  if (items.length === 0) return null
+  if (product.stopList) return <span className="editorial-unavailable">Нет в наличии</span>
+
   return (
-    <div className="product-grid">
-      {items.map(product => (
-        <div key={product.id} className="reveal">
-          <ProductCard product={product} />
-        </div>
-      ))}
-    </div>
+    <button
+      className="editorial-add"
+      type="button"
+      onClick={() => addItem(product)}
+      aria-label={`Добавить в корзину: ${product.name}`}
+      disabled={quantity >= 99}
+    >
+      {quantity > 0 && <span aria-hidden="true">{quantity}</span>}
+      <Plus size={16} />
+    </button>
   )
 }
 
-function EmptyState() {
-  return (
-    <p style={{
-      padding: 'var(--spacing-xl) 0',
-      color: 'var(--color-text-muted)',
-      fontSize: 'var(--font-size-base)',
-    }}>
-      Ничего не найдено по этому фильтру.
-    </p>
-  )
-}
-
-// Тело категории: если есть подкатегории — всегда показываем сгруппированные
-// блоки одним списком (подкатегорийные вкладки в шапке только скроллят к
-// нужному блоку и ничего не скрывают); фильтр (Все/Новинки/Хиты/...) при этом
-// применяется внутри каждой группы. Если подкатегорий нет — обычная плоская сетка.
-function CategoryBody({ category, filter }) {
-  const visibleSubs = (category.subcategories || []).filter(s => s.id !== 'all')
-  const hasSubcategories = visibleSubs.length > 0
-
-  if (hasSubcategories) {
-    const groups = visibleSubs
-      .map(sub => ({ sub, items: getFilteredItems(category.id, filter, sub.id) }))
-      .filter(g => g.items.length > 0)
-
-    if (groups.length === 0) return <EmptyState />
-
-    return groups.map(({ sub, items }) => (
-      <div
-        key={sub.id}
-        id={`subcat-${category.id}-${sub.id}`}
-        style={{
-          marginBottom: 'var(--spacing-xl)',
-          scrollMarginTop: 'calc(var(--header-height) + 120px)',
-        }}
-      >
-        <h3 style={{
-          fontSize: 'var(--font-size-lg)',
-          fontWeight: 700,
-          marginBottom: 'var(--spacing-md)',
-          paddingBottom: 'var(--spacing-sm)',
-        //   borderBottom: '2px solid var(--color-border)',
-          color: 'var(--color-text)',
-        }}>
-          {sub.name}
-        </h3>
-        <ProductGrid items={items} />
-      </div>
-    ))
-  }
-
-  const items = getFilteredItems(category.id, filter, null)
-  if (items.length === 0) return <EmptyState />
-  return <ProductGrid items={items} />
-}
-
-// Каждая категория — самостоятельный блок: свой фильтр и собственная
-// прилипающая мини-шапка внутри своей же секции. Никакого общего состояния
-// между категориями — это то, что раньше приводило к рассинхрону шапки с
-// реально видимой секцией во время скролла.
-//
-// Вкладки подкатегорий (Маленькие/Средние/Большие и т.п.) ничего не
-// фильтруют — это якорная навигация: клик скроллит к нужному блоку, а какая
-// вкладка подсвечена, определяется тем, какой блок сейчас реально виден
-// (тот же приём, что и для активной категории в сайдбаре).
-function CategorySection({ category }) {
-  const [filter, setFilter] = useState('all')
-  const visibleSubs = (category.subcategories || []).filter(s => s.id !== 'all')
-  const [activeSubTab, setActiveSubTab] = useState(visibleSubs[0]?.id ?? null)
-  const sectionRef = useRef(null)
-  const miniHeaderRef = useRef(null)
-
-  useReveal(sectionRef, [filter])
-
-  const handleSubcategoryClick = useCallback((subId) => {
-    setActiveSubTab(subId)
-    document.getElementById(`subcat-${category.id}-${subId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [category.id])
+function Cover() {
+  const coverRef = useRef(null)
+  const photoRef = useRef(null)
 
   useEffect(() => {
-    if (visibleSubs.length === 0) return
+    const cover = coverRef.current
+    const photo = photoRef.current
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let frame = null
 
-    function computeActiveSub() {
-      const miniHeaderHeight = miniHeaderRef.current?.getBoundingClientRect().height || 0
-      const line = getHeaderOffset() + miniHeaderHeight + 1
-      let current = null
-      for (const sub of visibleSubs) {
-        const el = document.getElementById(`subcat-${category.id}-${sub.id}`)
-        if (!el) continue
-        if (el.getBoundingClientRect().top <= line) current = sub.id
-      }
-      if (current) {
-        setActiveSubTab(prev => (prev === current ? prev : current))
-      }
+    function updateMotion() {
+      frame = null
+      const scroll = reduceMotion.matches ? 0 : Math.max(window.scrollY, 0)
+      const distance = Math.min(photo.clientHeight, 480)
+      const rotationProgress = Math.min(scroll / Math.max(distance, 1), 1)
+      const backdropProgress = Math.min(scroll / Math.max(cover.clientHeight, 1), 1)
+      cover.style.setProperty('--cover-rotation', `${-34 * rotationProgress}deg`)
+      cover.style.setProperty('--cover-drift', `${120 * backdropProgress}px`)
     }
 
-    computeActiveSub()
-    window.addEventListener('scroll', computeActiveSub, { passive: true })
-    window.addEventListener('resize', computeActiveSub)
+    function scheduleUpdate() {
+      if (frame === null) frame = requestAnimationFrame(updateMotion)
+    }
+
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    reduceMotion.addEventListener('change', scheduleUpdate)
+    updateMotion()
+
     return () => {
-      window.removeEventListener('scroll', computeActiveSub)
-      window.removeEventListener('resize', computeActiveSub)
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      reduceMotion.removeEventListener('change', scheduleUpdate)
+      if (frame !== null) cancelAnimationFrame(frame)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category.id])
+  }, [])
 
   return (
-    <section
-      id={`section-${category.id}`}
-      ref={sectionRef}
-      style={{
-        marginBottom: 'var(--spacing-2xl)',
-        scrollMarginTop: 'var(--header-height)',
-      }}
-    >
-      <div ref={miniHeaderRef} style={{
-        position: 'sticky',
-        top: 'var(--header-height)',
-        zIndex: 80,
-        background: 'var(--color-bg)',
-        padding: 'var(--spacing-md) 0',
-        borderBottom: '1px solid var(--color-border)',
-        marginBottom: 'var(--spacing-lg)',
-      }}>
-        <CategoryMiniHeader
-          category={category}
-          activeFilter={filter}
-          onFilterChange={setFilter}
-          activeSubcategory={activeSubTab}
-          onSubcategoryClick={handleSubcategoryClick}
-        />
+    <section className="editorial-cover" ref={coverRef} aria-labelledby="cover-title">
+      <div className="editorial-cover-backdrop" aria-hidden="true" />
+      <div className="editorial-container editorial-cover-inner">
+        <div className="editorial-cover-intro">
+          <p className="editorial-label">Доставка по Новороссийску</p>
+          <h1 id="cover-title">Роллы<br /><em>с характером</em></h1>
+        </div>
+        <div className="editorial-cover-photo" ref={photoRef}>
+          <img
+            src={coverPhoto}
+            alt="Ролл с лососем в палочках"
+            width={950}
+            height={860}
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
+        <div className="editorial-cover-details">
+          <p className="editorial-cover-description">Лосось, хрустящая темпура и сеты на общий стол.</p>
+          <div className="editorial-cover-actions">
+            <Link className="editorial-cta" to="/#catalog">Открыть меню <span aria-hidden="true">→</span></Link>
+            <Link className="editorial-cover-secondary" to="/#chef">Выбор шефа</Link>
+          </div>
+        </div>
       </div>
-      <CategoryBody category={category} filter={filter} />
     </section>
   )
 }
 
-export default function HomePage({ mobileSidebarOpen, onMobileSidebarClose }) {
-  const [activeCategory, setActiveCategory] = useState(categories[0]?.id || null)
-
-  const scrollToCategory = useCallback((categoryId) => {
-    setActiveCategory(categoryId)
-    document.getElementById(`section-${categoryId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
-
-  // Подсветка активной категории в сайдбаре: считаем "текущей" последнюю по
-  // порядку секцию, чей верх уже пересёк линию прилипания шапки — это та же
-  // самая линия (top: var(--header-height)), на которой держатся мини-шапки,
-  // поэтому подсветка сайдбара всегда совпадает с тем, что реально прилипло.
-  useEffect(() => {
-    // Без ручного rAF-тротлинга: секций мало (десяток), getBoundingClientRect
-    // на каждой — копейки. Так подсветка не может "залипнуть", если браузер
-    // пропустит один requestAnimationFrame (например, вкладка на миг скрылась
-    // посреди скролла) — раньше именно это иногда сбивало активную категорию.
-    function computeActive() {
-      const line = getHeaderOffset() + 1
-      let current = null
-      for (const cat of categories) {
-        const el = document.getElementById(`section-${cat.id}`)
-        if (!el) continue
-        if (el.getBoundingClientRect().top <= line) current = cat.id
-      }
-      if (current) {
-        setActiveCategory(prev => (prev === current ? prev : current))
-      }
-    }
-
-    computeActive()
-    window.addEventListener('scroll', computeActive, { passive: true })
-    window.addEventListener('resize', computeActive)
-    return () => {
-      window.removeEventListener('scroll', computeActive)
-      window.removeEventListener('resize', computeActive)
-    }
-  }, [])
+function DishPhoto({ src, alt = '' }) {
+  const [failed, setFailed] = useState(false)
 
   return (
-    <div className="app-layout">
-      <Sidebar
-        categories={categories}
-        activeCategory={activeCategory}
-        onCategoryClick={scrollToCategory}
-        isMobileOpen={mobileSidebarOpen}
-        onMobileClose={onMobileSidebarClose}
-      />
-
-      <main className="main-content">
-        <div className="page-container">
-          <BannerCarousel />
-
-          {categories.map(category => (
-            <CategorySection key={category.id} category={category} />
-          ))}
-        </div>
-      </main>
+    <div className="editorial-photo">
+      {!failed && (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+        />
+      )}
     </div>
+  )
+}
+
+function MenuCard({ product, occasion }) {
+  return (
+    <article className={product.image ? 'editorial-card' : 'editorial-card editorial-card--text'}>
+      {product.image && <DishPhoto src={product.image} />}
+      {occasion && <p className="editorial-label">{occasion}</p>}
+      <h3>{product.name}</h3>
+      <p className="editorial-description">{product.description}</p>
+      <div className="editorial-card-bottom">
+        <div>
+          <Price value={product.price} />
+          <span className="editorial-weight">{product.weight}{product.pieces > 1 && ` · ${product.pieces} шт.`}</span>
+        </div>
+        <AddProduct product={product} />
+      </div>
+    </article>
+  )
+}
+
+function MenuLine({ product }) {
+  return (
+    <li className="editorial-menu-line">
+      <div>
+        <h3>{product.name}</h3>
+        <p className="editorial-description">{product.description}</p>
+      </div>
+      <div className="editorial-menu-line-action">
+        <Price value={product.price} />
+        <AddProduct product={product} />
+      </div>
+    </li>
+  )
+}
+
+function SetCollection() {
+  const track = useRef(null)
+  const [canGoBack, setCanGoBack] = useState(false)
+  const [canGoForward, setCanGoForward] = useState(true)
+
+  useEffect(() => {
+    const rail = track.current
+    const update = () => {
+      setCanGoBack(rail.scrollLeft > 1)
+      setCanGoForward(rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 1)
+    }
+    const observer = new ResizeObserver(update)
+    observer.observe(rail)
+    rail.addEventListener('scroll', update, { passive: true })
+    update()
+    return () => {
+      observer.disconnect()
+      rail.removeEventListener('scroll', update)
+    }
+  }, [])
+
+  function shift(direction) {
+    const rail = track.current
+    const [first, second] = rail.children
+    rail.scrollBy({ left: direction * (second.offsetLeft - first.offsetLeft) })
+  }
+
+  return (
+    <section className="editorial-section" id="sets" aria-labelledby="sets-title" data-scroll-reveal>
+      <div className="editorial-section-heading">
+        <h2 id="sets-title">Сеты к столу</h2>
+        <div className="editorial-rail-controls">
+          <button type="button" disabled={!canGoBack} onClick={() => shift(-1)} aria-label="Предыдущие сеты"><ChevronLeft size={19} /></button>
+          <button type="button" disabled={!canGoForward} onClick={() => shift(1)} aria-label="Следующие сеты"><ChevronRight size={19} /></button>
+        </div>
+      </div>
+      <div className="editorial-set-rail" ref={track}>
+        {sets.map(({ id, occasion }) => <MenuCard key={id} product={menu.get(id)} occasion={occasion} />)}
+      </div>
+    </section>
+  )
+}
+
+function Catalog() {
+  const [category, setCategory] = useState(categories[0])
+  const [subcategory, setSubcategory] = useState('all')
+  const [filter, setFilter] = useState('all')
+  const categoryProducts = products.filter(product => product.categoryId === category.id)
+  const subgroup = categoryProducts.filter(product => subcategory === 'all' || product.subcategoryId === subcategory)
+  const availableFilters = category.filters.filter(tag => tag !== 'all' && subgroup.some(product => product.tags.includes(tag)))
+  const visible = subgroup.filter(product => filter === 'all' || product.tags.includes(filter))
+
+  return (
+    <section className="editorial-section editorial-catalog" id="catalog" aria-labelledby="catalog-title" data-scroll-reveal>
+      <div className="editorial-section-heading">
+        <h2 id="catalog-title">Всё меню</h2>
+        <span className="editorial-catalog-count" role="status">Позиций: {visible.length}</span>
+      </div>
+      <div className="editorial-categories" role="group" aria-label="Категории меню">
+        {categories.map(item => (
+          <button
+            key={item.id}
+            type="button"
+            aria-pressed={category.id === item.id}
+            onClick={() => { setCategory(item); setSubcategory('all'); setFilter('all') }}
+          >{item.name}</button>
+        ))}
+      </div>
+      <div className="editorial-catalog-filters">
+        <label className="editorial-select">
+          <span>Вид</span>
+          <select value={subcategory} onChange={event => { setSubcategory(event.target.value); setFilter('all') }}>
+            {category.subcategories.map(sub => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
+          </select>
+        </label>
+        {availableFilters.length > 0 && (
+          <label className="editorial-select">
+            <span>Подборка</span>
+            <select value={filter} onChange={event => setFilter(event.target.value)}>
+              <option value="all">Все</option>
+              {availableFilters.map(tag => <option key={tag} value={tag}>{filterLabels[tag]}</option>)}
+            </select>
+          </label>
+        )}
+      </div>
+      <div className="editorial-catalog-grid">
+        {visible.map(product => <MenuCard key={product.id} product={product} />)}
+      </div>
+    </section>
+  )
+}
+
+export default function HomePage() {
+  const sectionsRef = useRef(null)
+  useReveal(sectionsRef)
+
+  return (
+    <main className="editorial-home">
+      <Cover />
+
+      <div className="editorial-container" ref={sectionsRef}>
+        <section className="editorial-section editorial-chef" id="chef" aria-labelledby="chef-title" data-scroll-reveal>
+          <DishPhoto src={chefPhoto} alt="Роллы и суши на керамической тарелке" />
+          <div className="editorial-chef-copy">
+            <h2 id="chef-title">Выбор шефа</h2>
+            <ul>{chefPicks.map(product => <MenuLine key={product.id} product={product} />)}</ul>
+          </div>
+        </section>
+
+        <SetCollection />
+
+        <section className="editorial-section editorial-new" aria-labelledby="new-title" data-scroll-reveal>
+          <div className="editorial-new-copy">
+            <h2 id="new-title">Новые<br /> сочетания</h2>
+            <p>Ролл в хрустящей темпуре и запечённый с креветкой.</p>
+          </div>
+          {newFlavors.map(product => <MenuCard key={product.id} product={product} />)}
+        </section>
+
+        <Catalog />
+      </div>
+    </main>
   )
 }

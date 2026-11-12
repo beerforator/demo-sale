@@ -1,10 +1,10 @@
 import { FooterDemoNotice } from '../../../../packages/customer/index.jsx'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { MapPin, Phone, Clock } from './Icons'
 
 const footerCss = `
 .footer {
-  background: #F0EBE2;
+  background: #eee4d8;
   border-top: 1px solid var(--color-border);
   padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-xl);
   
@@ -14,13 +14,12 @@ const footerCss = `
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1fr;
   gap: var(--spacing-2xl);
-  max-width: var(--content-max-width);
+  max-width: 1344px;
   margin: 0 auto;
 }
 
 .footer-brand-name {
-  font-size: var(--font-size-xl);
-  font-weight: 800;
+  font: 700 30px/1 var(--editorial-serif);
   color: var(--color-text);
   letter-spacing: -0.01em;
   margin-bottom: var(--spacing-sm);
@@ -106,13 +105,10 @@ const footerCss = `
 `
 
 export default function Footer() {
-  const location = useLocation()
-  const isRoot = location.pathname === '/'
-
   return (
     <>
       <style>{footerCss}</style>
-      <footer className="footer" style={isRoot ? { marginLeft: 'var(--sidebar-width)' } : undefined}>
+      <footer className="footer">
         <div className="footer-grid">
           <div>
             <div className="footer-brand-name">СушиСтоРолл</div>
@@ -123,11 +119,10 @@ export default function Footer() {
           <div>
             <h4 className="footer-heading">Меню</h4>
             <nav className="footer-links">
-              <Link to="/" className="footer-link">Главная</Link>
+              <Link to="/#catalog" className="footer-link">Меню</Link>
               <Link to="/about" className="footer-link">О нас</Link>
               <Link to="/cart" className="footer-link">Корзина</Link>
               <Link to="/courier" className="footer-link">Курьеру</Link>
-              <a href="#" className="footer-link">Доставка и оплата</a>
             </nav>
           </div>
 

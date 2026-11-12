@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { Plus, Minus, Trash2, Package, CheckCircle } from '../components/Icons'
-import products from '../data/products.json'
+import products from '../data/products.js'
 
 
 const productById = {}
@@ -37,7 +37,7 @@ export default function CartPage() {
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
 
   const recommended = products
-    .filter(p => !cartProductIds.has(p.id) && !p.stopList)
+    .filter(p => !cartProductIds.has(p.id) && !p.stopList && p.image)
     .slice(0, 6)
 
   const handleApplyPromo = () => {
@@ -59,9 +59,10 @@ export default function CartPage() {
   return (
     <main className="main-content main-content--full">
       <div className="page-container" style={{ maxWidth: '860px' }}>
-        <h1 style={{
-          fontSize: 'var(--font-size-3xl)',
-          fontWeight: 800,
+        <h1 className="editorial-cart-title" style={{
+          fontSize: 'clamp(36px, 5.5vw, 58px)',
+          fontWeight: 600,
+          lineHeight: 1,
           letterSpacing: '-0.02em',
           marginBottom: 'var(--spacing-xl)',
           color: 'var(--color-text)',
@@ -202,7 +203,7 @@ export default function CartPage() {
                       borderBottom: '1px solid var(--color-border-light)',
                     }}
                   >
-                    {!hasImageError ? (
+                    {product.image && !hasImageError ? (
                       <img
                         src={product.image}
                         alt={product.name}

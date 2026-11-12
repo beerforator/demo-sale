@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { X, Plus, Minus, Trash2, Package, CheckCircle } from './Icons'
-import products from '../data/products.json'
+import products from '../data/products.js'
 
 
 const styles = {
@@ -503,7 +503,7 @@ export default function CartPanel() {
 
                 return (
                   <div key={item.productId} style={styles.item}>
-                    {!hasImageError ? (
+                    {product.image && !hasImageError ? (
                       <img
                         src={product.image}
                         alt={product.name}
