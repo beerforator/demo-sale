@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
@@ -11,13 +11,24 @@ import CourierPage from './pages/CourierPage.jsx'
 import AccountPage from './pages/AccountPage.jsx'
 
 function AppLayout() {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const { pathname, hash, key } = useLocation()
+  const scrollKey = hash ? key : pathname
+
+  useEffect(() => {
+    if (hash) {
+      const section = document.getElementById(hash.slice(1))
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      section?.scrollIntoView({ behavior: reduceMotion ? 'instant' : 'smooth' })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }
+  }, [hash, scrollKey])
 
   return (
     <>
-      <Header onMenuToggle={() => setMobileSidebarOpen(prev => !prev)} />
+      <Header />
       <Routes>
-        <Route path="/" element={<HomePage mobileSidebarOpen={mobileSidebarOpen} onMobileSidebarClose={() => setMobileSidebarOpen(false)} />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

@@ -5,6 +5,8 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import './styles/index.css'
+import './assets/fonts/cormorant.css'
+import './styles/editorial.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

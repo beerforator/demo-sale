@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import chefPhoto from '../assets/food/chef.webp'
+import storyPhoto from '../assets/food/set-family.webp'
+import products from '../data/products.js'
 import { Icon, MapPin, Phone, Clock, Mail, ChefHat, Fish, Truck } from '../components/Icons'
 
 const uspCards = [
@@ -33,14 +36,8 @@ const timeline = [
   { year: '2025', label: 'Любимый бренд города' },
 ]
 
-const galleryImages = [
-  'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=280&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1553621042-f6e147245754?w=280&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=280&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1611143669185-afc2245e3252?w=280&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1540648639573-8c848de23f0a?w=280&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=280&h=200&fit=crop',
-]
+const galleryIds = ['philadelphia', 'california', 'set-party', 'set-family', 'set-company', 'set-duo']
+const gallery = galleryIds.map(id => products.find(product => product.id === id))
 
 export default function AboutPage() {
   const revealRef = useRef(null)
@@ -65,85 +62,16 @@ export default function AboutPage() {
   }, [])
 
   return (
-    <main className="main-content main-content--full">
+    <main className="main-content main-content--full editorial-about">
       <div className="page-container" ref={revealRef}>
 
-        {/* ═══ SECTION 1: HERO ═══ */}
-        <section
-          className="reveal"
-          style={{
-            marginBottom: 'var(--spacing-3xl)',
-            borderRadius: 'var(--radius-xl)',
-            background: 'linear-gradient(135deg, #E8380D 0%, #F45D2C 50%, #FF7043 100%)',
-            padding: '80px 48px',
-            textAlign: 'center',
-            color: '#fff',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              opacity: 0.12,
-              backgroundImage:
-                'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 1px, transparent 1px), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 1px, transparent 1px)',
-              backgroundSize: '60px 60px, 80px 80px',
-            }}
-          />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <h1
-              style={{
-                fontSize: 'var(--font-size-4xl)',
-                fontWeight: 900,
-                letterSpacing: '-0.03em',
-                marginBottom: 'var(--spacing-md)',
-                textShadow: '0 2px 12px rgba(0,0,0,0.2)',
-              }}
-            >
-              СушиСтоРолл
-            </h1>
-            <p
-              style={{
-                fontSize: 'var(--font-size-xl)',
-                fontWeight: 400,
-                opacity: 0.9,
-                maxWidth: 600,
-                margin: '0 auto var(--spacing-xl)',
-                lineHeight: 1.6,
-              }}
-            >
-              Душа Новороссийска — доставка суши с 2018 года
-            </p>
-            <Link
-              to="/"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-sm)',
-                padding: '14px 36px',
-                background: '#fff',
-                color: 'var(--color-accent)',
-                borderRadius: 'var(--radius-full)',
-                fontSize: 'var(--font-size-lg)',
-                fontWeight: 700,
-                textDecoration: 'none',
-                transition: 'all 0.25s ease',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 6px 28px rgba(0,0,0,0.22)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)'
-              }}
-            >
-              Смотреть меню
-            </Link>
+        <section className="editorial-about-cover" aria-labelledby="about-title">
+          <div>
+            <h1 id="about-title">СушиСтоРолл</h1>
+            <p>Доставляем суши в Новороссийске с 2018 года.</p>
+            <Link to="/#catalog" className="editorial-cta">Открыть меню <span aria-hidden="true">→</span></Link>
           </div>
+          <img src={chefPhoto} alt="Суши на керамической тарелке" />
         </section>
 
         {/* ═══ SECTION 2: USP BLOCKS ═══ */}
@@ -328,8 +256,9 @@ export default function AboutPage() {
               }}
             >
               <img
-                src="https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=500&h=600&fit=crop"
-                alt="СушиСтоРолл"
+                src={storyPhoto}
+                alt="Сет роллов на общем столе"
+                loading="lazy"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -372,9 +301,9 @@ export default function AboutPage() {
               scrollSnapType: 'x mandatory',
             }}
           >
-            {galleryImages.map((src, i) => (
+            {gallery.map(product => (
               <div
-                key={i}
+                key={product.id}
                 style={{
                   flex: '0 0 280px',
                   borderRadius: 'var(--radius-md)',
@@ -393,8 +322,9 @@ export default function AboutPage() {
                 }}
               >
                 <img
-                  src={src}
-                  alt={`Фото ${i + 1}`}
+                  src={product.image}
+                  alt={product.name}
+                  loading="lazy"
                   style={{
                     width: 280,
                     height: 200,
